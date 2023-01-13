@@ -3,19 +3,39 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
-import java.lang.reflect.Field;
+//import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
-    private static final String tableName = User.class.getSimpleName();
+/*    private static final String tableName = User.class.getSimpleName();
     private static final Field[] userFields = User.class.getDeclaredFields();// .class.getFields();
     //private static final String idField = User.class.getFields()[0].getName();
     private static final String idField = userFields[0].getName();
     private static final String nameField = userFields[1].getName();
     private static final String lastnameField = userFields[2].getName();
-    private static final String ageField = userFields[3].getName();
+    private static final String ageField = userFields[3].getName();*/
+
+    // Nikita Nesterenko: "что-то ты экстравагантное придумал - убирай"
+
+    // Konstantin Harin:
+    // Код выше на мой взгляд ближе к реализации паттерна MVC.
+    // Изначально была идея строить запрос так:
+
+    // String str = "DROP TABLE IF EXISTS ?";
+    // PreparedStatement statement = conn.prepareStatement(str);
+    // statement.setString(1, tableName);
+
+    // И это не работает, т.к. имя таблицы/поля заворачивается в одиночные кавычки
+    // Т.е. потенциальная SQL-инъекция оборачивается в 'строковый литерал'
+
+    private static final String tableName = "User";
+    private static final String idField = "id";
+    private static final String nameField = "name";
+    private static final String lastnameField = "lastname";
+    private static final String ageField = "age";
+
 
 
     public UserDaoJDBCImpl() {
@@ -25,6 +45,9 @@ public class UserDaoJDBCImpl implements UserDao {
     public void createUsersTable() {
 /*        String str = "CREATE TABLE IF NOT EXISTS ? (" +
                 "? BIGINT primary key auto_increment, ? VARCHAR(10), ? VARCHAR(10), ? TINYINT)";*/
+
+        // Nikita Nesterenko: "можно воспользоваться тройными ковычками джава 17"
+        // Konstantin Harin: пишу на 11. Если 17 - это требование, тогда да. В любом случае - взял на заметку
         String str = "CREATE TABLE IF NOT EXISTS " + tableName +
                 " (" +
                 idField + " BIGINT primary key auto_increment, " +
