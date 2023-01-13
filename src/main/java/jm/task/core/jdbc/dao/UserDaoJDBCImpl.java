@@ -128,6 +128,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
+        User user;
 
         try(Connection conn = Util.getConnection();
                 Statement statement = conn.createStatement();
@@ -135,10 +136,12 @@ public class UserDaoJDBCImpl implements UserDao {
                 ResultSet resultSet = statement.executeQuery("SELECT * FROM " + tableName)) {
 
             while (resultSet.next()) {
-                userList.add(new User(
+                user = new User(
                         resultSet.getString(2),
                         resultSet.getString(3),
-                        Byte.parseByte(resultSet.getString(4))));
+                        Byte.parseByte(resultSet.getString(4)));
+                user.setId(resultSet.getLong(1));
+                userList.add(user);
             }
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
